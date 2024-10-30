@@ -47,6 +47,17 @@ class AuthController {
     }
   };
 
+  public googleLogin = async (req: any, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId:string = req.user.id;
+      const { cookie, findUser } = await this.authService.googleLogin(userId);
+      res.setHeader('Set-Cookie', [cookie]);
+      res.status(200).json({ data: findUser, message: 'google login' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public logOut = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userData: User = req.user;
@@ -58,6 +69,15 @@ class AuthController {
       next(error);
     }
   };
+
+  public protected = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      res.send("hello protected")
+    } catch (error) {
+      next(error);
+    }
+  };
+
 }
 
 export default AuthController;

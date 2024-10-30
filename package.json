@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc && tsc-alias",
     "start": "npm run build && NODE_ENV=production node dist/index.js",
-    "dev": "NODE_ENV=development nodemon",
+    "dev": "NODE_ENV=development nodemon --inspect src/index.ts",
     "build:swc": "swc src -d dist --source-maps --copy-files",
     "lint": "npx eslint \"src/**/*.+(js|jsx|ts|tsx)\"",
     "lint:fix": "npm run lint -- --fix"
@@ -20,9 +20,12 @@
     "dotenv": "^16.4.5",
     "envalid": "^8.0.0",
     "express": "~4.16.1",
+    "express-session": "^1.18.1",
+    "googleapis": "^144.0.0",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
-    "morgan": "~1.9.1"
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.12.0",
