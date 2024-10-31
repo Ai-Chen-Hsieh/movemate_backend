@@ -1,4 +1,4 @@
-import { PrismaClient, User } from '@prisma/client';
+import { PrismaClient, User } from "@prisma/client";
 
 class UsersService {
   public users = new PrismaClient().user;
@@ -13,12 +13,18 @@ class UsersService {
 
   public getUserById = async (id: string): Promise<User | null> => {
     try {
-      return await this.users.findUnique({
-        where: {
-          id,
-        },
-      });
+      const user = await this.users.findUnique({
+        where: { id },
+    });
+
+    // Check if the user exists and handle null googleId
+    if (!user) {
+        throw new Error(`User with ID ${id} not found.`);
+    }
+
+    return user; // User can be returned even if googleId is null
     } catch (e) {
+      e;
       throw new Error(e);
     }
   };

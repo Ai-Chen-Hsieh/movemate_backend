@@ -5,9 +5,9 @@ import authMiddleware from '@middlewares/auth.middleware';
 const usersRouter = Router();
 const usersController = new UsersController();
 
-usersRouter.get('/users', usersController.getUsers);
+usersRouter.get('/users', authMiddleware, usersController.getUsers);
 
-usersRouter.get('/users/:id', usersController.getUserById);
+usersRouter.get('/users/:id', authMiddleware, usersController.getUserById);
 
 usersRouter.put('/users/:id', authMiddleware, usersController.updateUser);
 
