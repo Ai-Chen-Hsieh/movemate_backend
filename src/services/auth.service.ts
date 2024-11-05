@@ -1,10 +1,10 @@
-import { compare, hash } from "bcrypt";
-import { sign } from "jsonwebtoken";
-import { PrismaClient, User } from "@prisma/client";
-import { CreateUserDto } from "@dtos/users.dto";
-import { DataStoredInToken, TokenData } from "@interfaces/auth.interface";
-import { HttpException } from "@exceptions/HttpException";
-import * as dotenv from "dotenv";
+import { compare, hash } from 'bcrypt';
+import { sign } from 'jsonwebtoken';
+import { PrismaClient, User } from '@prisma/client';
+import { CreateUserDto } from '@dtos/users.dto';
+import { DataStoredInToken, TokenData } from '@interfaces/auth.interface';
+import { HttpException } from '@exceptions/HttpException';
+import * as dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -28,7 +28,7 @@ class AuthService {
     if (!findUser) throw new HttpException(409, `This email ${data.email} was not found`);
 
     const isPasswordMatching: boolean = await compare(data.password, findUser.password);
-    if (!isPasswordMatching) throw new HttpException(409, "Password is not matching");
+    if (!isPasswordMatching) throw new HttpException(409, 'Password is not matching');
 
     const tokenData = this.createToken(findUser);
     const cookie = this.createCookie(tokenData);
@@ -43,6 +43,13 @@ class AuthService {
     const tokenData = this.createToken(findUser);
     const cookie = this.createCookie(tokenData);
 
+    return { cookie, findUser };
+  }
+
+  public async facebookLogin(userId: string): Promise<{ cookie: string; findUser: User }> {
+    const findUser: User = await this.users.findUnique({ where: { facebookId: userId } });
+    const tokenData = this.createToken(findUser);
+    const cookie = this.createCookie(tokenData);
     return { cookie, findUser };
   }
 
