@@ -18,6 +18,7 @@ model User {
   email   String   @unique
   name    String
   password String?
-  googleId String  @unique
+  googleId String?  @unique
+  facebookId String?  @unique
   coverPhoto String?
 }
