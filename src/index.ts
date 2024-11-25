@@ -10,6 +10,8 @@ import cookieParser from 'cookie-parser';
 import authRouter from './routers/auth.routes';
 import errorMiddleware from './middlewares/error.middleware';
 import "./config/passport";
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from './utils/swagger-output.json';
 
 
 // App Variables
@@ -42,6 +44,7 @@ app.use(passport.session()); // Enable session support for Passport
 app.use('/', usersRouter);
 app.use('/', authRouter);
 app.use(errorMiddleware);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 
 // Server Activation

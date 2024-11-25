@@ -23,34 +23,28 @@ class AuthService {
     return createUserData;
   }
 
-  public async login(data: CreateUserDto): Promise<{ cookie: string; findUser: User }> {
+  public async login(data: CreateUserDto): Promise<{ findUser: User }> {
     const findUser: User = await this.users.findUnique({ where: { email: data.email } });
     if (!findUser) throw new HttpException(409, `This email ${data.email} was not found`);
 
     const isPasswordMatching: boolean = await compare(data.password, findUser.password);
     if (!isPasswordMatching) throw new HttpException(409, 'Password is not matching');
 
-    const tokenData = this.createToken(findUser);
-    const cookie = this.createCookie(tokenData);
-
-    return { cookie, findUser };
+    return { findUser };
   }
 
-  public async googleLogin(userId: string): Promise<{ cookie: string; findUser: User }> {
+  public async googleLogin(userId: string): Promise<{findUser: User }> {
     const findUser: User = await this.users.findUnique({ where: { id: userId } });
     if (!findUser) throw new HttpException(409, `User doesn't exist`);
+    findUser.isFilledOutDoc = findUser.isFilledOutDoc ?? false;
 
-    const tokenData = this.createToken(findUser);
-    const cookie = this.createCookie(tokenData);
-
-    return { cookie, findUser };
+    return {findUser};
   }
 
-  public async facebookLogin(userId: string): Promise<{ cookie: string; findUser: User }> {
+  public async facebookLogin(userId: string): Promise<{ findUser: User }> {
     const findUser: User = await this.users.findUnique({ where: { facebookId: userId } });
-    const tokenData = this.createToken(findUser);
-    const cookie = this.createCookie(tokenData);
-    return { cookie, findUser };
+
+    return { findUser };
   }
 
   public async logout(data: User): Promise<User> {
@@ -66,10 +60,6 @@ class AuthService {
     const expiresIn: number = 60 * 60;
 
     return { expiresIn, token: sign(dataStoredInToken, secretKey, { expiresIn }) };
-  }
-
-  public createCookie(tokenData: TokenData): string {
-    return `Authorization=${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn};`;
   }
 }
 

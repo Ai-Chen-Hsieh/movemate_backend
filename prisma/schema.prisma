@@ -21,4 +21,5 @@ model User {
   googleId String?  @unique
   facebookId String?  @unique
   coverPhoto String?
+  isFilledOutDoc Boolean?  @default(false)
 }

@@ -4,6 +4,7 @@ import { CreateUserDto } from '@dtos/users.dto';
 import { RequestWithUser } from '@interfaces/auth.interface';
 import AuthService from '@services/auth.service';
 import { validate } from 'class-validator';
+import generateToken from '@/utils/jwtUtils';
 
 class AuthController {
   public authService = new AuthService();
@@ -29,7 +30,11 @@ class AuthController {
       const userData: CreateUserDto = req.body;
       const signUpUserData: User = await this.authService.signup(userData);
 
-      res.status(201).json({ data: signUpUserData, message: 'signup' });
+      // Generate a JWT
+      const token = generateToken(signUpUserData);
+
+      // Respond with the token and user data
+      res.status(201).json({ token, message: 'signup' });
     } catch (error) {
       next(error);
     }
@@ -38,10 +43,11 @@ class AuthController {
   public logIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userData: CreateUserDto = req.body;
-      const { cookie, findUser } = await this.authService.login(userData);
+      const { findUser } = await this.authService.login(userData);
 
-      res.setHeader('Set-Cookie', [cookie]);
-      res.status(200).json({ data: findUser, message: 'login' });
+      // Generate a JWT
+      const token = generateToken(findUser);
+      res.status(200).json({ token, message: 'login' });
     } catch (error) {
       next(error);
     }
@@ -50,9 +56,10 @@ class AuthController {
   public googleLogin = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId: string = req.user.id;
-      const { cookie, findUser } = await this.authService.googleLogin(userId);
-      res.setHeader('Set-Cookie', [cookie]);
-      res.status(200).json({ data: findUser, message: 'google login' });
+      const { findUser } = await this.authService.googleLogin(userId);
+      // Generate a JWT
+      const token = generateToken(findUser);
+      res.status(200).json({ token, message: 'google login' });
     } catch (error) {
       next(error);
     }
@@ -61,31 +68,12 @@ class AuthController {
   public facebookLogin = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId: string = req.user.id;
-      const { cookie, findUser } = await this.authService.facebookLogin(userId);
-      res.setHeader('Set-cookie', [cookie]);
-      res.status(200).json({ data: findUser, message: 'facebook login' });
+      const { findUser } = await this.authService.facebookLogin(userId);
+      // Generate a JWT
+      const token = generateToken(findUser);
+      res.status(200).json({ token, message: 'facebook login' });
     } catch (error) {
       console.log(error);
-    }
-  };
-
-  public logOut = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const userData: User = req.user;
-      const logOutUserData: User = await this.authService.logout(userData);
-
-      res.setHeader('Set-Cookie', ['Authorization=; Max-age=0']);
-      res.status(200).json({ data: logOutUserData, message: 'logout' });
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  public protected = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      res.send('hello protected');
-    } catch (error) {
-      next(error);
     }
   };
 }

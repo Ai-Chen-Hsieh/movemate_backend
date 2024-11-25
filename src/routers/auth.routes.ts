@@ -6,13 +6,18 @@ import passport from 'passport';
 const authRouter = Router();
 const authController = new AuthController();
 
-authRouter.post('/signup', authController.signUp);
+authRouter.post('/signup', 
+  /* 	#swagger.tags = ['Auth']
+        #swagger.description = '註冊會員(手動)' */
+  authController.signUp);
 
-authRouter.post('/login', authController.logIn);
-
-authRouter.post('/logout', authMiddleware, authController.logOut);
+authRouter.post('/login', 
+  /* 	#swagger.tags = ['Auth']
+        #swagger.description = '會員登入(手動)' */
+  authController.logIn);
 
 authRouter.get('/', (req, res) => {
+  // #swagger.ignore = true
   res.send(`
       <a href="http://localhost:3000/auth/google">Authenticate with Google</a>
       <br/>
@@ -22,6 +27,8 @@ authRouter.get('/', (req, res) => {
 
 authRouter.get(
   '/auth/google',
+  /* 	#swagger.tags = ['Auth']
+        #swagger.description = 'google第三方登入' */
   passport.authenticate('google', {
     scope: ['email', 'profile'],
   }),
@@ -29,6 +36,8 @@ authRouter.get(
 
 authRouter.get(
   '/auth/facebook',
+  /* 	#swagger.tags = ['Auth']
+        #swagger.description = 'facebook第三方登入' */
   passport.authenticate('facebook', {
     scope: ['email', 'public_profile'],
   }),
@@ -36,6 +45,7 @@ authRouter.get(
 
 authRouter.get(
   '/auth/facebook/callback',
+  // #swagger.ignore = true
   passport.authenticate('facebook', {
     successRedirect: '/login',
     failureRedirect: '/',
@@ -44,11 +54,13 @@ authRouter.get(
 );
 
 authRouter.get('/login', (req, res) => {
+  // #swagger.ignore = true
   res.send(`login successfully`);
 });
 
-authRouter.get('/google/redirect', passport.authenticate('google'), authController.googleLogin);
+authRouter.get('/google/redirect', 
+  // #swagger.ignore = true
+  passport.authenticate('google'), authController.googleLogin);
 
-authRouter.get('/protected', authMiddleware, authController.protected);
 
 export default authRouter;
